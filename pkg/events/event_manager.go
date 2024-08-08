@@ -7,6 +7,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 )
 
+// EventManager gerencia handlers de eventos e despacha mensagens
 type EventManager struct {
 	handlers []EventHandler
 }

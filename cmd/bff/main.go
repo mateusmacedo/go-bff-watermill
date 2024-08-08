@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
 	"github.com/go-chi/chi/v5"
 
 	"github.com/mateusmacedo/bff-watermill/internal/slices/user"
@@ -29,12 +28,13 @@ func main() {
 	// Configuração do adaptador de logger
 	loggerAdapter := infrastructure.NewLoggerAdapter(appLogger)
 
-	// Configuração do publisher e subscriber do Watermill
-	goChannel := gochannel.NewGoChannel(gochannel.Config{}, loggerAdapter)
+	// Configuração do Redis
+	redisClient := infrastructure.NewRedisClient()
+	defer redisClient.Close()
 
-	// Inicializar o publicador e assinante
-	eventPublisher := events.NewWatermillEventPublisher(goChannel)
-	eventSubscriber := events.NewWatermillEventSubscriber(goChannel)
+	// Inicializar o publicador e assinante usando Redis Streams
+	eventPublisher := events.NewWatermillRedisPublisher(redisClient, loggerAdapter)
+	eventSubscriber := events.NewWatermillRedisSubscriber(redisClient, loggerAdapter)
 
 	// Criar e registrar event handlers
 	eventManager := events.NewEventManager()
@@ -66,7 +66,7 @@ func main() {
 				appLogger.Info("Assinante encerrado")
 				return
 			case msg := <-messages:
-				eventManager.HandleMessage(msg)
+				eventManager.HandleMessage(msg) // Passando *message.Message diretamente
 			}
 		}
 	}()

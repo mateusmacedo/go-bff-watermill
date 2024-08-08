@@ -8,17 +8,13 @@ import (
 
 type Config struct {
 	ServerPort      string
-	DatabaseURL     string
 	MaxConnections  int
 	EnableDebugMode bool
 }
 
 func LoadConfig() *Config {
 	config := &Config{
-		ServerPort:      getEnv("SERVER_PORT", "8080"),
-		DatabaseURL:     getEnv("DATABASE_URL", "postgres://user:pass@localhost:5432/mydb?sslmode=disable"),
-		MaxConnections:  getEnvAsInt("MAX_CONNECTIONS", 10),
-		EnableDebugMode: getEnvAsBool("ENABLE_DEBUG_MODE", false),
+		ServerPort: getEnv("SERVER_PORT", "8080"),
 	}
 
 	return config
