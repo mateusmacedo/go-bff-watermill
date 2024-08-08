@@ -10,19 +10,19 @@ type UserService interface {
 }
 
 func NewUserService(repo UserRepository) UserService {
-	return &userServiceImpl{repo: repo}
+	return &userService{repo: repo}
 }
 
-type userServiceImpl struct {
+type userService struct {
 	repo UserRepository
 }
 
-func (s *userServiceImpl) CreateUser(user *User) error {
+func (s *userService) CreateUser(user *User) error {
 	user.ID = generateUserID() // Gerando um ID único dinâmico
 	return s.repo.Save(user)
 }
 
-func (s *userServiceImpl) GetUser(id string) (*User, error) {
+func (s *userService) GetUser(id string) (*User, error) {
 	return s.repo.FindByID(id)
 }
 
