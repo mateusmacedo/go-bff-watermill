@@ -33,8 +33,8 @@ func main() {
 	defer redisClient.Close()
 
 	// Inicializar o publicador e assinante usando Redis Streams
-	eventPublisher := events.NewWatermillRedisPublisher(redisClient, loggerAdapter)
-	eventSubscriber := events.NewWatermillRedisSubscriber(redisClient, loggerAdapter)
+	eventPublisher := infrastructure.NewWatermillRedisPublisher(redisClient, loggerAdapter)
+	eventSubscriber := infrastructure.NewWatermillRedisSubscriber(redisClient, loggerAdapter)
 
 	// Criar e registrar event handlers
 	eventManager := events.NewEventManager()
