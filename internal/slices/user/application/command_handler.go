@@ -27,9 +27,9 @@ func (h *CreateUserCommandHandler) Handle(cmd CreateUserCommand) (string, error)
 	}
 
 	event := events.Event{
-		ID:   user.ID,
-		Data: cmd,
-		Name: "UserCreated",
+		ID:      user.ID,
+		Payload: cmd,
+		Name:    "UserCreated",
 	}
 
 	err = h.publisher.Publish("user_events", event)
