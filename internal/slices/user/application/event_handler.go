@@ -24,5 +24,5 @@ func (h *UserCreatedHandler) Handle(ctx context.Context, event events.Event) err
 }
 
 func (h *UserCreatedHandler) CanHandle(event events.Event) bool {
-	return event.Event == "UserCreated"
+	return event.Name == "UserCreated"
 }

@@ -44,6 +44,6 @@ func (m *EventManager) HandleMessage(ctx context.Context, msg *message.Message) 
 		}
 	}
 
-	log.Printf("Nenhum handler registrado pode processar o evento: %s", event.Event)
+	log.Printf("Nenhum handler registrado pode processar o evento: %s", event.Name)
 	msg.Ack() // Confirma o processamento se nenhum handler puder lidar com o evento
 }
