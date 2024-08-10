@@ -1,14 +1,12 @@
 package events
 
-import "context"
+import (
+	"context"
 
-type Event struct {
-	ID      string
-	Name    string
-	Payload interface{}
-}
+	"github.com/ThreeDotsLabs/watermill/message"
+)
 
 type EventHandler interface {
-	Handle(ctx context.Context, event Event) error
-	CanHandle(event Event) bool
+	Handle(ctx context.Context, event *message.Message) error
+	CanHandle(event *message.Message) bool
 }

@@ -2,7 +2,6 @@ package events
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -25,16 +24,9 @@ func (m *EventManager) RegisterHandler(handler EventHandler) {
 
 // HandleMessage despacha uma mensagem para o handler apropriado
 func (m *EventManager) HandleMessage(ctx context.Context, msg *message.Message) {
-	var event Event
-	if err := json.Unmarshal(msg.Payload, &event); err != nil {
-		log.Printf("Erro ao desserializar mensagem: %v", err)
-		msg.Nack() // Não confirmar o processamento da mensagem
-		return
-	}
-
 	for _, handler := range m.handlers {
-		if handler.CanHandle(event) {
-			if err := handler.Handle(ctx, event); err != nil {
+		if handler.CanHandle(msg) {
+			if err := handler.Handle(ctx, msg); err != nil {
 				log.Printf("Erro ao processar evento: %v", err)
 				msg.Nack() // Não confirmar o processamento em caso de erro
 				return
@@ -44,6 +36,6 @@ func (m *EventManager) HandleMessage(ctx context.Context, msg *message.Message) 
 		}
 	}
 
-	log.Printf("Nenhum handler registrado pode processar o evento: %s", event.Name)
-	msg.Ack() // Confirma o processamento se nenhum handler puder lidar com o evento
+	log.Printf("Nenhum handler registrado pode processar o evento: %s", msg.UUID)
+	msg.Ack()
 }
