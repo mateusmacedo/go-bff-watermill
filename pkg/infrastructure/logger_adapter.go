@@ -7,32 +7,32 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 )
 
-type LoggerAdapter struct {
+type WatermillLoggerAdapter struct {
 	logger *Logger
 }
 
-func NewLoggerAdapter(logger *Logger) *LoggerAdapter {
-	return &LoggerAdapter{logger: logger}
+func NewLoggerAdapter(logger *Logger) *WatermillLoggerAdapter {
+	return &WatermillLoggerAdapter{logger: logger}
 }
 
-func (l *LoggerAdapter) Trace(msg string, fields watermill.LogFields) {
+func (l *WatermillLoggerAdapter) Trace(msg string, fields watermill.LogFields) {
 	l.logger.Info("[TRACE] " + msg + " " + formatFields(fields))
 }
 
-func (l *LoggerAdapter) Debug(msg string, fields watermill.LogFields) {
+func (l *WatermillLoggerAdapter) Debug(msg string, fields watermill.LogFields) {
 	l.logger.Info("[DEBUG] " + msg + " " + formatFields(fields))
 }
 
-func (l *LoggerAdapter) Info(msg string, fields watermill.LogFields) {
+func (l *WatermillLoggerAdapter) Info(msg string, fields watermill.LogFields) {
 	l.logger.Info("[INFO] " + msg + " " + formatFields(fields))
 }
 
-func (l *LoggerAdapter) Error(msg string, err error, fields watermill.LogFields) {
+func (l *WatermillLoggerAdapter) Error(msg string, err error, fields watermill.LogFields) {
 	l.logger.Error("[ERROR] " + msg + ": " + err.Error() + " " + formatFields(fields))
 }
 
-func (l *LoggerAdapter) With(fields watermill.LogFields) watermill.LoggerAdapter {
-	return &LoggerAdapter{
+func (l *WatermillLoggerAdapter) With(fields watermill.LogFields) watermill.LoggerAdapter {
+	return &WatermillLoggerAdapter{
 		logger: l.logger,
 	}
 }
