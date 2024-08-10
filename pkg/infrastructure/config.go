@@ -1,9 +1,7 @@
 package infrastructure
 
 import (
-	"log"
 	"os"
-	"strconv"
 )
 
 type Config struct {
@@ -25,25 +23,4 @@ func getEnv(key string, defaultValue string) string {
 		return value
 	}
 	return defaultValue
-}
-
-func getEnvAsInt(key string, defaultValue int) int {
-	valueStr := getEnv(key, "")
-	if value, err := strconv.Atoi(valueStr); err == nil {
-		return value
-	}
-	return defaultValue
-}
-
-func getEnvAsBool(key string, defaultValue bool) bool {
-	valueStr := getEnv(key, "")
-	if value, err := strconv.ParseBool(valueStr); err == nil {
-		return value
-	}
-	return defaultValue
-}
-
-func init() {
-	config := LoadConfig()
-	log.Printf("Configuração carregada: %+v\n", config)
 }
