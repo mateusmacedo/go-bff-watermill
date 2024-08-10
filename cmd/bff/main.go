@@ -20,13 +20,14 @@ import (
 func main() {
 	config := infrastructure.LoadConfig()
 
-	router := chi.NewRouter()
-
 	// Criação de um novo logger
-	appLogger := infrastructure.NewLogger(os.Stdout, os.Stderr)
+	appLogger, err := infrastructure.NewZapAppLogger()
+	if err != nil {
+		panic(err)
+	}
 
 	// Configuração do adaptador de logger
-	loggerAdapter := infrastructure.NewLoggerAdapter(appLogger)
+	loggerAdapter := infrastructure.NewWatermillLoggerAdapter(appLogger)
 
 	// Configuração do Redis
 	redisClient := infrastructure.NewRedisClient()
@@ -49,11 +50,11 @@ func main() {
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 		sig := <-sigChan
-		appLogger.Info("Recebido sinal: " + sig.String())
+		appLogger.Info(ctx, "Sinal capturado", map[string]interface{}{"signal": sig})
 		cancel()
 	}()
 
-	// Registrar assinante antes de publicar
+	// Registrar assinante antes de publicar delegando as mensagens para o eventManager realizar o roteamento
 	go func() {
 		messages, err := eventSubscriber.Subscribe(ctx, "user_events")
 		if err != nil {
@@ -63,13 +64,15 @@ func main() {
 		for {
 			select {
 			case <-ctx.Done():
-				appLogger.Info("Assinante encerrado")
+				appLogger.Info(ctx, "Encerrando assinante...", nil)
 				return
 			case msg := <-messages:
-				eventManager.HandleMessage(msg) // Passando *message.Message diretamente
+				eventManager.HandleMessage(ctx, msg)
 			}
 		}
 	}()
+
+	router := chi.NewRouter()
 
 	// Inicializar o slice de usuário e registrar as rotas
 	userSlice := user.NewUserSlice(eventPublisher, eventSubscriber)
@@ -83,15 +86,16 @@ func main() {
 
 	// Goroutine para iniciar o servidor HTTP
 	go func() {
-		appLogger.Info("Server running on :" + config.ServerPort)
+		appLogger.Info(ctx, "Server starting on:"+config.ServerPort, nil)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Erro ao iniciar o servidor: %v", err)
 		}
+		appLogger.Info(ctx, "Server running on:"+config.ServerPort, nil)
 	}()
 
 	// Aguardar cancelamento e encerrar servidor HTTP
 	<-ctx.Done()
-	appLogger.Info("Encerrando servidor...")
+	appLogger.Info(ctx, "Encerrando servidor...", nil)
 
 	// Timeout para encerramento do servidor HTTP
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -101,5 +105,5 @@ func main() {
 		log.Fatalf("Erro ao encerrar servidor: %v", err)
 	}
 
-	appLogger.Info("Servidor encerrado")
+	appLogger.Info(ctx, "Servidor encerrado", nil)
 }
