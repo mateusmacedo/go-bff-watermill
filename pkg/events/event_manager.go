@@ -1,6 +1,7 @@
 package events
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 
@@ -23,7 +24,7 @@ func (m *EventManager) RegisterHandler(handler EventHandler) {
 }
 
 // HandleMessage despacha uma mensagem para o handler apropriado
-func (m *EventManager) HandleMessage(msg *message.Message) {
+func (m *EventManager) HandleMessage(ctx context.Context, msg *message.Message) {
 	var event Event
 	if err := json.Unmarshal(msg.Payload, &event); err != nil {
 		log.Printf("Erro ao desserializar mensagem: %v", err)
@@ -33,7 +34,7 @@ func (m *EventManager) HandleMessage(msg *message.Message) {
 
 	for _, handler := range m.handlers {
 		if handler.CanHandle(event) {
-			if err := handler.Handle(event); err != nil {
+			if err := handler.Handle(ctx, event); err != nil {
 				log.Printf("Erro ao processar evento: %v", err)
 				msg.Nack() // Não confirmar o processamento em caso de erro
 				return
