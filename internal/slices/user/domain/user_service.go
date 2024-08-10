@@ -5,7 +5,7 @@ import (
 )
 
 type UserService interface {
-	CreateUser(user *User) error
+	CreateUser(user *User) (UserCreatedEvent, error)
 	GetUser(id string) (*User, error)
 }
 
@@ -17,9 +17,17 @@ type userService struct {
 	repo UserRepository
 }
 
-func (s *userService) CreateUser(user *User) error {
+func (s *userService) CreateUser(user *User) (UserCreatedEvent, error) {
 	user.ID = generateUserID() // Gerando um ID único dinâmico
-	return s.repo.Save(user)
+	err := s.repo.Save(user)
+	if err != nil {
+		return UserCreatedEvent{}, err
+	}
+
+	return UserCreatedEvent{Name: "user.created", Payload: struct {
+		Name  string
+		Email string
+	}{Name: user.Name, Email: user.Email}}, nil
 }
 
 func (s *userService) GetUser(id string) (*User, error) {
