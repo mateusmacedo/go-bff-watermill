@@ -6,7 +6,10 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/ThreeDotsLabs/watermill-redisstream v1.3.0
 	github.com/go-chi/chi/v5 v5.1.0
+	go.uber.org/zap v1.27.0
 )
+
+require go.uber.org/multierr v1.10.0 // indirect
 
 require (
 	github.com/Rican7/retry v0.3.1 // indirect
