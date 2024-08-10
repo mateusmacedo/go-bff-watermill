@@ -1,29 +1,24 @@
 package application
 
 import (
-	"encoding/json"
+	"context"
 
+	_application "github.com/mateusmacedo/bff-watermill/pkg/application"
 	"github.com/mateusmacedo/bff-watermill/pkg/events"
-	"github.com/mateusmacedo/bff-watermill/pkg/infrastructure"
 )
 
-// UserCreatedHandler processa eventos de usuário criado
 type UserCreatedHandler struct {
-	logger *infrastructure.Logger
+	logger _application.AppLogger
 }
 
-func NewUserCreatedHandler(logger *infrastructure.Logger) events.EventHandler {
+func NewUserCreatedHandler(logger _application.AppLogger) events.EventHandler {
 	return &UserCreatedHandler{logger: logger}
 }
 
-func (h *UserCreatedHandler) Handle(event events.Event) error {
-	eventMarshaled, err := json.Marshal(event)
-	if err != nil {
-		h.logger.Error("Erro ao desserializar evento" + err.Error())
-		return err
-	}
-
-	h.logger.Info(string(eventMarshaled))
+func (h *UserCreatedHandler) Handle(ctx context.Context, event events.Event) error {
+	h.logger.Info(ctx, "Evento recebido", map[string]interface{}{
+		"event": event,
+	})
 
 	return nil
 }
