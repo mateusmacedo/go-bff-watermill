@@ -1,6 +1,10 @@
 package application
 
 import (
+	"encoding/json"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+
 	"github.com/mateusmacedo/bff-watermill/internal/slices/user/domain"
 	"github.com/mateusmacedo/bff-watermill/pkg/events"
 )
@@ -21,18 +25,20 @@ func NewCreateUserCommandHandler(userService domain.UserService, publisher event
 
 func (h *CreateUserCommandHandler) Handle(cmd CreateUserCommand) (string, error) {
 	user := &domain.User{Name: cmd.Name, Email: cmd.Email}
-	err := h.userService.CreateUser(user)
+
+	event, err := h.userService.CreateUser(user)
 	if err != nil {
 		return "", err
 	}
 
-	event := events.Event{
-		ID:      user.ID,
-		Payload: cmd,
-		Name:    "UserCreated",
+	payload, err := json.Marshal(event)
+	if err != nil {
+		return "", err
 	}
 
-	err = h.publisher.Publish("user_events", event)
+	msg := message.NewMessage(user.ID, payload)
+	msg.Metadata.Set("type", "user.created")
+	err = h.publisher.Publish("user_events", msg)
 	if err != nil {
 		return "", err
 	}
