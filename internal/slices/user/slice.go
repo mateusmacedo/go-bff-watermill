@@ -4,9 +4,9 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/mateusmacedo/bff-watermill/internal/slices/user/application"
+	"github.com/mateusmacedo/bff-watermill/internal/slices/user/domain"
 	"github.com/mateusmacedo/bff-watermill/internal/slices/user/infrastructure"
 	iface "github.com/mateusmacedo/bff-watermill/internal/slices/user/interface"
-	"github.com/mateusmacedo/bff-watermill/pkg/domain"
 	"github.com/mateusmacedo/bff-watermill/pkg/events" // Certifique-se de que o pacote correto está sendo importado
 )
 

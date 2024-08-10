@@ -1,6 +1,6 @@
 package infrastructure
 
-import "github.com/mateusmacedo/bff-watermill/pkg/domain"
+import "github.com/mateusmacedo/bff-watermill/internal/slices/user/domain"
 
 type UserRepository struct {
 	users map[string]*domain.User

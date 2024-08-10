@@ -1,6 +1,6 @@
 package application
 
-import "github.com/mateusmacedo/bff-watermill/pkg/domain"
+import "github.com/mateusmacedo/bff-watermill/internal/slices/user/domain"
 
 type GetUserQuery struct {
 	UserID string

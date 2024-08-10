@@ -1,7 +1,7 @@
 package application
 
 import (
-	"github.com/mateusmacedo/bff-watermill/pkg/domain"
+	"github.com/mateusmacedo/bff-watermill/internal/slices/user/domain"
 	"github.com/mateusmacedo/bff-watermill/pkg/events"
 )
 
